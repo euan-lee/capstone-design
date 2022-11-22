@@ -28,6 +28,28 @@ import argparse
 import os
 import sys
 from pathlib import Path
+import telegram
+from telegram.ext import Updater
+from telegram.ext import MessageHandler,Filters 
+
+bot = telegram.Bot(token='5752074310:AAFalu6sjHudOYO8wvx-d-IxzdLmTOPganM')
+
+updater = Updater(token='5752074310:AAFalu6sjHudOYO8wvx-d-IxzdLmTOPganM', use_context=True)
+dispatcher = updater.dispatcher
+updater.start_polling()
+
+def handler(update, context):
+    user_text = update.message.text 
+    if user_text == "자장가":
+        bot.send_message(chat_id="5757547530", text="https://www.youtube.com/watch?v=du17m1rk-48") 
+    elif user_text == "병원": 
+        bot.send_message(chat_id="5757547530", text="https://map.naver.com/v5/search/%EC%88%98%EC%A7%80%20%EC%86%8C%EC%95%84%EC%B2%AD%EC%86%8C%EB%85%84%EA%B3%BC?c=14144733.8307887,4484118.8828619,12,0,0,0,dh") 
+    elif user_text == "동요": 
+        bot.send_message(chat_id="5757547530", text="https://www.youtube.com/watch?v=7p_wiQ6DFYw")
+
+echo_handler = MessageHandler(Filters.text, handler)
+dispatcher.add_handler(echo_handler)
+
 
 import torch
 import torch.backends.cudnn as cudnn
@@ -45,7 +67,6 @@ from utils.general import (LOGGER, check_file, check_img_size, check_imshow, che
 from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, time_sync
 
-fin=0;
 @torch.no_grad()
 def run(
         weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
@@ -155,9 +176,10 @@ def run(
                     n = (det[:, -1] == c).sum()  # detections per class
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
                     if n:
-                        if names[int(c)] == 'sad':
-                            print("socketio",names[int(c)]);
-                            
+                     if names[int(c)] == 'sad':          
+                         bot.sendMessage(chat_id="5757547530", text="아기가 울고있어요\n확인해주세요.")
+                          # python detect.py --weights last.pt --img 640 --conf 0.25 --source 0
+                         
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     if save_txt:  # Write to file
@@ -200,7 +222,7 @@ def run(
 
         # Print time (inference-only)
         LOGGER.info(f'{s}Done. ({t3 - t2:.3f}s)')
-    
+
     # Print results
     t = tuple(x / seen * 1E3 for x in dt)  # speeds per image
     LOGGER.info(f'Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS per image at shape {(1, 3, *imgsz)}' % t)
@@ -249,7 +271,8 @@ def main(opt):
     check_requirements(exclude=('tensorboard', 'thop'))
     run(**vars(opt))
 
+
 if __name__ == "__main__":
-    
     opt = parse_opt()
     main(opt)
+
